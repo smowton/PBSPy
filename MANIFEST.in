@@ -1,0 +1,4 @@
+include TODO setup.cfg runtests LICENSE ChangeLog
+exclude *.pyo *.pyc *.o *.so
+graft src
+graft buildutils

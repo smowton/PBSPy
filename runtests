@@ -1,0 +1,92 @@
+#! /usr/bin/env python
+__copyright__ = """
+ 
+ Copyright (C) 2007, Mohan Kannapareddy <kmoh.raj@gmail.com>
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License. 
+ You may obtain a copy of the License at 
+
+  http://www.apache.org/licenses/LICENSE-2.0 
+
+ Unless required by applicable law or agreed to in writing, software 
+ distributed under the License is distributed on an "AS IS" BASIS, 
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+"""
+"""
+"""
+import os
+import sys
+import unittest
+
+_DEFAULT_TEST_ROOT_DIR = os.path.join('src','test')
+
+sys.path.append(_DEFAULT_TEST_ROOT_DIR)
+
+from init_tests import api,test_params,ConfigParserError
+
+STDTESTS_SUBDIR = (
+      'capi',
+)
+
+def run_suite(suite, testclass=None):
+    """Run tests from a unittest.TestSuite-derived class."""
+    runner = unittest.TextTestRunner(sys.stdout, verbosity=2)
+
+    test_params.initialize()
+    result = runner.run(suite)
+    test_params.destroy()
+
+    if not result.wasSuccessful():
+        if len(result.errors) == 1 and not result.failures:
+            err = result.errors[0][1]
+        elif len(result.failures) == 1 and not result.errors:
+            err = result.failures[0][1]
+        else:
+            if testclass is None:
+                msg = "errors occurred; run in verbose mode for details"
+            else:
+                msg = "errors occurred in %s.%s" \
+                      % (testclass.__module__, testclass.__name__)
+            raise SystemExit, msg
+        raise SystemExit,err
+
+def findtests():
+    """Return a list of all applicable test modules."""
+    
+    tests = []
+    for test_subdir in STDTESTS_SUBDIR:
+      testdir = os.path.join(_DEFAULT_TEST_ROOT_DIR,test_subdir)
+      sys.path.append(testdir)
+      names = os.listdir(testdir)
+      for name in names:
+        if name[:5] == "test_" and name[-3:] == os.extsep+"py" and not name.endswith("~"):
+          modname = name[:-3]
+          tests.append(modname)
+          print name
+        #: end if
+      #:end for
+    #: end for test_subdir
+    tests.sort()
+    return tests
+
+#:##
+#:     MAIN
+#:##
+
+def Main():
+  alltests = findtests()
+  for test_module in alltests:
+    print "**** Running test: ", test_module, " ****"
+    mod = __import__(test_module, globals(), locals(), [])
+    suite = getattr(mod,'test_suite',None)
+    if suite:
+      run_suite(suite)
+#: end f(Main)
+
+
+if __name__ == '__main__':
+    Main()

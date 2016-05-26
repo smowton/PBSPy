@@ -1,0 +1,22 @@
+if __name__ == '__main__':
+    import sys,os
+    sys.path.append('..')
+
+from init_tests import api,test_params,ConfigParserError
+import unittest
+
+class _X_(unittest.TestCase):
+    """
+    """
+    def setUp(self):
+        """setup prior to *each* test"""
+
+    def tearDown(self):
+        """Tear down after each test"""
+
+test_suite = unittest.makeSuite(_X_)
+
+if __name__ == '__main__':
+    test_params.initialize()
+    unittest.TextTestRunner(verbosity=2).run(test_suite)
+    test_params.destroy()

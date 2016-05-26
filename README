@@ -1,0 +1,43 @@
+==================
+ INSTALLATION
+==================
+  Please read the INSTALL file.
+
+=======
+ USAGE
+=======
+
+  I know the documentation is sparse, but most of the code is well documented and the python
+  "help" system is your friend :). Also, I have some test code in "src/test" that gives you
+  an idea as to how it works. But if you have worked with the PBS C API this would be very
+  intituitive and painless.
+
+  Data Types Available
+  --------------------
+
+    . "Server"   : This basically wraps the whole pbs_ifl API (complete)
+    . "Mom"      : Available *ONLY* if --enable-rm was chosen.
+    . "Log"      : Available *ONLY* if --enable-log was chosen.
+    . "Data"     : This is the wrapper for the C struct batch_status
+    . "Attr"     : This is the wrapper for the C struct attrop and struct attropl
+    . "BatchOp"  : This is a nice wrapper for C enum op.
+
+
+  Package Structure
+  -----------------
+    The C API is a module which lives in the sub package "capi" which is a child of the root
+    package "PBSPy". The idea to create a package stems from:
+      - Use the power of python to provide a nice higher level interface to the PBS system.
+      - Ability to build the complete software infrastructre needed to manage a PBS infrastructure
+        (write schedulers, command tools, web interfaces .....)
+
+
+  Sample Usage
+  ------------
+
+    >>> import PBSPy.capi as pbs
+    >>> myPBSServer = pbs.Server('localhost')
+    >>> help(myPBSServer)
+    ...
+    >>> myPBSServer.connect()
+    ...

@@ -1,0 +1,39 @@
+===============================================================================
+ INSTALLATION
+===============================================================================
+
+ PREREQUISTES
+ ------------
+  
+  - Python 2.5.1 or above (see setup.py for version below that and above 2.2.3)
+  - Torque/OpenPBS installation (will work with PBSPro too minus the extensions)
+
+ QUICKSTART GUIDE
+ -----------------
+
+  Edit the setup.cfg and change the neccessary parameters in the [pbs_config] section.
+  Things you might want to change are:
+
+    include_dirs
+    library_dirs
+    libraries
+    enable_rm           (MUST have rm.h  in the include search directory)
+    enable_log          (MUST have log.h in the include search directory)
+
+  After that it is the standard distutils commands
+
+  $ python setup.py build
+
+  and then to install
+
+  $ python setup.py install
+
+  Or you can pass the options in the command line, you have to invoke the pbs_config
+  command and pass the options there as they are not "inherited".
+
+  $ python setup.py pbs_config --enable-rm --enable-log build -f 
+                    ^^^^^^^^^^                          ^^^^^
+                    ||||||||||                          |||||
+
+                    (command_1) (opts for command_1)    (command_2) (opts for command_2)
+
