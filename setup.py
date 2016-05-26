@@ -142,9 +142,7 @@ def prefix_path(path,src_list):
 
 EXTERNAL_DIR=os.path.join('Modules','external')
 
-sources = prefix_path(PATHJOIN(PBSPY_EXT_MODULE_C_SRC_ROOT,'module'),['mainModule.c']) + prefix_path(PATHJOIN(PBSPY_EXT_MODULE_C_SRC_ROOT,'objects'),['torque4.cpp'])
-
-print sources
+sources = prefix_path(PATHJOIN(PBSPY_EXT_MODULE_C_SRC_ROOT,'module'),['mainModule.c'])
 
 #: TODO, update the list, depends is broken anyway use -f to force the rebuild.
 #: depend on our includes

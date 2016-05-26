@@ -1484,8 +1484,6 @@ svr_usepool(PBSServerObject *self, PyObject *args, PyObject *kwds)
   return PyInt_FromLong(rc);
 }
 
-#define CS_WORKAROUND 1
-
 /* pbs_submit */
 static char svr_submit_doc[] =
 "Implements the pbs_submit (see the man page)\n\
@@ -1509,7 +1507,6 @@ svr_submit(PBSServerObject *self, PyObject *args, PyObject *kwds)
   char *dest = NULLSTR;
   char *extend = (char *)NULL;
   char *job_id = (char *)NULL; /* returned from pbs_submit */
-  int should_free_jobid = 1;
   PyObject *ret_v = (PyObject *)NULL;
   static char *kwlist[] = {"attribs","script","dest",
                            "extend",NULL};
@@ -1535,70 +1532,12 @@ svr_submit(PBSServerObject *self, PyObject *args, PyObject *kwds)
     return NULL;
   free_attrib++; /* make sure we free it */
 
-#ifdef CS_WORKAROUND
-
-  #include "../include/torque4.h"
-
-  memmgr* mm = NULL;
-  char *errmsg = NULL;
-  job_data* res_attr = NULL;
-  job_data* job_attr = NULL;
-  struct attropl *p;
-
-  // jobid will have come from Torque's MM in this case.
-  should_free_jobid = 0;
-
-  if(!attrib) {
-    PyErr_Format(PyExc_Exception, "Must specify at least one job attribute to work around stupid libtorque bug");
-    goto done;
-  }
-  
-  if(self->con_hdl < 0) {
-    PyErr_Format(PyExc_Exception, "Bad connection handle");
-    goto done;
-  }
-
-  if (memmgr_init_c(&mm, 0) != PBSE_NONE)
-    {
-      PyErr_Format(PyExc_Exception, "MM init failed");
-      goto done;
-    }
-
-  for (p = attrib; p; p = p->next) {
-    if (p->resource && strlen(p->resource)) {
-      // Watch out: PBSPy's pyobj-to-attropl turns Python None into "" NOT null.
-      hash_add_or_exit_c(&mm, &res_attr, p->resource, p->value, CMDLINE_DATA);
-    } else {
-      hash_add_or_exit_c(&mm, &job_attr, p->name, p->value, CMDLINE_DATA);
-    }
-  }
-
-  int ret;
-  if((ret = pbs_submit_hash(self->con_hdl, &mm, job_attr, res_attr,
-			    script, dest, extend, &job_id, &errmsg)) != 0) {
-    PyErr_Format(PyExc_Exception, "Submit failed: %d %s", ret, errmsg);
-    job_id = NULL;
-  }
-
-  memmgr_destroy_c(&mm);
-
-#else
 
   if ( !(job_id = pbs_submit(self->con_hdl,attrib,script,dest,extend)) ) {
-    PyErr_Format(PyExc_Exception, "Submit failed: %d", errno);
     goto done;
   }
-
-#endif
-  
-  if(job_id != NULL) {
-    ret_v = PyString_FromString(job_id);
-    if(should_free_jobid)
-      free(job_id);
-  }
-  else
-    ret_v = NULL;
-
+  ret_v = PyString_FromString(job_id);
+  free(job_id);
  done:
   if (free_attrib)
     _free_attropl(attrib);
