@@ -23,4 +23,4 @@ __copyright__ = """
 __revision__ = "$Id: __init__.py 17 2007-11-30 02:42:05Z kmohraj $"
 
 # PBSPy version
-__version__ = "1.0.0b1"
+__version__ = "1.0.1"

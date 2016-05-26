@@ -79,7 +79,7 @@ from distextensions.ext.build_ext  import build_extExtended as build_extClass
 #: ------------------------------
 
 PACKAGE_ROOT_NAME = "PBSPy"
-PACKAGE_VERSION = "1.0.0b1"
+PACKAGE_VERSION = "1.0.1"
 PACKAGE_PYTHON_SRC_ROOT = os.path.join('src','main','python')
 
 #: this is the name of out c ext module, also used to generate the init<module> function name
